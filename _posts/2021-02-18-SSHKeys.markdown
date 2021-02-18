@@ -1,0 +1,70 @@
+---
+layout: post
+title:  "Setup SSH public key Authentication to connect to a remote server!"
+date:   2021-02-18 09:48:41 +0530
+categories: jekyll update
+---
+<h1>{{ "Before you begin" }}</h1>
+
+* The remote server and the computer you use to connect to the remote server must have a version of SSH installed.
+
+* You need to be able to transfer your public key to the remote system. Therefore, you must either be able to log into the remote system with an established account username and password/passphrase, or have an administrator on the remote system add the public key to the `~/.ssh/authorized_keys` file in your account.
+
+<h1>{{ "Set up authentication using SSH" }}</h1>
+
+1. Use command-line SSH to generate a key pair using the RSA algorithm. 
+{% highlight shell %}
+ssh-keygen -t rsa
+{% endhighlight %}
+{:start="2"} 
+1. You will be prompted to supply a filename (for saving the key pair) and a password (for protecting your private key):
+
+    * <B>Filename:</B> To accept the default filename (and location) for your key pair, press `Enter` or `Return` without entering a filename. Alternatively, you can enter a filename (for example, `my_ssh_key`) at the prompt, and then press `Enter` or `Return`.
+    * <B>Password:</B> Enter a password that contains at least five characters, and then press `Enter` or `Return`. If you press `Enter` or `Return` without entering a password, your private key will be generated without password-protection.
+
+Your keys would be stored on your computer in a .ssh directory off your home directory (for example, `~/.ssh/id_rsa` or `~/.ssh/my_ssh_key`).
+
+{:start="3"}
+1. Use SCP to copy the public key file (for example, `~/.ssh/id_rsa.pub`) to your account on the remote server. 
+{% highlight shell %}
+scp ~/.ssh/id_rsa.pub username@hostname:~/
+{% endhighlight %}
+You'll be prompted for your account password. Your public key will be copied to your home directory on the remote server.
+
+{:start="4"}
+1. Log into the remote system using your account username and password.
+
+1. If your account on the remote system doesn't already contain a `~/.ssh/authorized_keys` file, create one; on the command line, enter the following commands:
+{% highlight shell %}
+mkdir -p ~/.ssh
+touch ~/.ssh/authorized_keys
+{% endhighlight %}
+
+{:start="6"}
+1. On the remote system, add the contents of your public key file (for example, `~/id_rsa.pub`) to a new line in your `~/.ssh/authorized_keys` file; on the command line, enter:
+{% highlight shell %}
+cat ~/id_rsa.pub >> ~/.ssh/authorized_keys
+{% endhighlight %}
+{:start="7"}
+1. You may now safely delete the public key file (for example, `~/id_rsa.pub`) from your account on the remote server; on the command line, enter:
+{% highlight shell %}
+rm ~/id_rsa.pub
+{% endhighlight %}
+{:start="8"}
+1. If the private key you're using does not have the default name, or is not stored in the default path (not `~/.ssh/id_rsa`), you must edit SSH config file(`~/.ssh/config`) by specifying which private key should be used for connections to a particular remote host. If config file is not present, create one; on the command line, enter:
+{% highlight shell %}
+touch ~/.ssh/config
+{% endhighlight %}
+
+Add `Host` and `IdentityFile` directives to specify a particular private key for particular host in `~/.ssh/config`:
+{% highlight shell %}
+Host "hostname"
+IdentityFile ~/.ssh/my_ssh_key
+{% endhighlight %}      
+&nbsp;Once you save the file, SSH will use the specified private key for future connections to that host.
+
+{:start="9"}
+1. You now should be able to SSH to your account on the remote server by entring the password or passphrase you set.
+
+    
+
