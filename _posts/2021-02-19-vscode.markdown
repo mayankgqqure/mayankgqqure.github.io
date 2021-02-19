@@ -1,0 +1,58 @@
+---
+layout: post
+title:  "VS Code for Remote Development via SSH"
+date:   2021-02-19 10:48:41 +0530
+categories: jekyll update
+---
+
+In this tutorial, you’ll enable the Remote-SSH plugin, configure Visual Studio Code to execute code on the remote server, and execute code from your local Visual Studio Code installation on the remote server.
+
+<h1>{{ "Step 1 - Installing the Remote-SSH Plugin in Visual Code" }}</h1>
+Go to Extension Marketplace by pressing `Ctrl+Shift+X` or by clicking on the bottom icon, which looks like four squares in a box.
+
+{:refdef: style="text-align: center;"}
+![image-title-here](/assets/p1.png){:class="img-responsive"}
+{: refdef}
+
+Once you have the Extensions Marketplace open, type `Remote-SSH` in the Search Extensions in Marketplace search bar. When you find the plugin, select it and then click the green Install button to install the extension.
+
+
+
+{:refdef: style="text-align: center;"}
+![image-title-here](/assets/p2.png){:class="img-responsive"}
+{: refdef}                                                         
+<br/>
+<h1>{{ "Step 2 - Configuring the Remote-SSH Plugin and Connecting To Your Server" }}</h1>
+For configuration, you'll need the following pieces of information:
+
+* The server's IP or hostname.
+* The username you'll connect with. 
+* The private key you'll use for authentication.
+
+You’ll use this information to create an SSH configuration file.
+
+Now that you have the Remote-SSH plugin installed, you’ll see a small green box in the bottom left-hand corner of the Visual Studio Code interface. If you hover over the box with your mouse pointer, the popup will say <B>Open a remote window</B>. The button looks like a greater than sign slightly under a less than sign <B>>< </B>, like the one in the following image:
+
+{:refdef: style="text-align: center;"}
+![image-title-here](/assets/p3.png){:class="img-responsive"}
+{: refdef}
+
+Click the button, and a dialog box appears in the top center. Select <B>Remote-SSH: Open Configuration File… </B>from the list:
+
+{:refdef: style="text-align: center;"}
+![image-title-here](/assets/p4.png){:class="img-responsive"}
+{: refdef}
+
+The next prompt will ask you which configuration file you want to open. If you’re on Windows, you’ll see two locations: one in your personal user directory, and one in the installation location for SSH. You should use the file in your user directory when configuring the server.
+
+Add the following code to the Config file:
+{% highlight shell %}
+Host my_remote_server
+    HostName 10.2.34.15
+    User mayank.garg
+    IdentityFile ~/.ssh/my_ssh_key
+{% endhighlight %}
+
+Visual Code is now configured and ready to connect to your server. Click on the green <B>Open a remote window</B> button in the bottom left-hand corner and select <B>Remote-SSH: Connect to Host…</B>
+
+Enter password or passphrase to connect to your server. 

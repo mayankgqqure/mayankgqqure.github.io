@@ -25,9 +25,9 @@ ssh-keygen -t rsa
 Your keys would be stored on your computer in a .ssh directory off your home directory (for example, `~/.ssh/id_rsa` or `~/.ssh/my_ssh_key`).
 
 {:start="3"}
-1. Use SCP to copy the public key file (for example, `~/.ssh/id_rsa.pub`) to your account on the remote server. 
+1. Use SCP to copy the public key file (for example, `~/.ssh/id_rsa.pub`) to your account on the remote server(for example,  Username:mayank.garg and IP:10.34.2.15). 
 {% highlight shell %}
-scp ~/.ssh/id_rsa.pub username@hostname:~/
+scp ~/.ssh/id_rsa.pub mayank.garg@10.34.2.15:~/
 {% endhighlight %}
 You'll be prompted for your account password. Your public key will be copied to your home directory on the remote server.
 
@@ -58,10 +58,10 @@ touch ~/.ssh/config
 
 Add `Host` and `IdentityFile` directives to specify a particular private key for particular host in `~/.ssh/config`:
 {% highlight shell %}
-Host "hostname"
+Host 10.2.34.15
 IdentityFile ~/.ssh/my_ssh_key
 {% endhighlight %}      
-&nbsp;Once you save the file, SSH will use the specified private key for future connections to that host.
+Once you save the file, SSH will use the specified private key for future connections to that host.
 
 {:start="9"}
 1. You now should be able to SSH to your account on the remote server by entring the password or passphrase you set.
