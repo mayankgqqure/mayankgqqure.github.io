@@ -47,7 +47,7 @@ The next prompt will ask you which configuration file you want to open. If youâ€
 
 Add the following code to the Config file:
 {% highlight shell %}
-Host my_remote_server
+Host server_hogwarts
     HostName 10.2.34.15
     User mayank.garg
     IdentityFile ~/.ssh/my_ssh_key
