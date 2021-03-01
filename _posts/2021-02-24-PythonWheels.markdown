@@ -91,3 +91,15 @@ and, a wheel is the result of running the following command:
 {% highlight shell %}
 $ python setup.py bdist_wheel
 {% endhighlight %}
+
+For example, you can build a wheel for `HTTPie`, a command-line HTTP client written in python.
+Here's the result of building wheel:
+{% highlight shell %}
+$ git clone -q git@github.com:jakubroztocil/httpie.git
+$ cd httpie
+$ python setup.py bdist_wheel
+$ ls -1 dist/
+httpie-2.2.0.dev0-py3-none-any.whl
+{% endhighlight %}
+
+The resulting bdist gets put in `dist/` by default, but you can change that with the `--dist-dir` flag. 
