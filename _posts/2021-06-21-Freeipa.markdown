@@ -1,0 +1,155 @@
+---
+layout: post
+title:  "FreeIPA installation and Configuration."
+date:   2021-06-22 09:48:41 +0530
+categories: jekyll update
+---
+<h1>{{ "What is FreeIPA?" }}</h1>
+
+FreeIPA is identity management tool which is open source, it is the upstream project for Red Hat identity manager. With FreeIPA , we can easily manage centralized authentication along with account management, policy (host-based access control) and audit, additionaly FreeIPA also provides the services like DNS and PKI.
+
+<B>FreeIPA is based on:</B>
+* 389 Directory Server(LDAP)
+* MIT Kerberos
+* SSSD
+* Dogtag (Certificate System)
+* NTP & DNS
+
+In this simple article I will show how to install and configure FreeIPA tool on CentOS 7 Server.
+
+I have 2 sections here. One is about FreeIPA on the normal server and the other is FreeIPA in Docker container.
+
+* My test Lab server details:
+    * OS: Centos-7
+    * Hostname = ipa1.qure.ai
+
+<h1>{{ "FreeIPA server Installation and Configuration" }}</h1>
+<I><B>Step 1: Set fully qualified hostname and apply updates.</B></I>
+{% highlight shell %}
+#vim /etc/hostname
+ipa1.qure.ai
+{% endhighlight %}
+Update the server using yum update command.
+{% highlight shell %}
+yum update -y;
+{% endhighlight %}
+
+<I><B>Step 2: Set local resolver for the hostname.</B></I>
+{% highlight shell %}
+echo -e "172.31.14.231 ipa1.qure.ai ipa1" >> /etc/hosts
+{% endhighlight %}
+
+<I><B>Step:3 Install FreeIPA packages using yum command</B></I>
+
+FreeIPA packages and its dependencies are available in the default package repositories.
+Run the below command to install FreeIPA and its dependencies.
+{% highlight shell %}
+yum install ipa-server ipa-server-dns -y
+{% endhighlight %}
+
+<I><B>Step:4 Start the FreeIPA Installation setup using “ipa-server-install”.</B></I>
+
+Once the packages are installed successfully then use the below command to start the freeipa installation setup,
+
+It will prompt couple of things like to configure Integrated DNS, Host name, Domain Name and Realm Name.
+{% highlight shell %}
+ipa-server-install
+{% endhighlight %}
+Enter the password you want to set up and keep the other settings default by pressing enter. It will take some time to configure FreeIPA server.
+
+* Note: In case you get the below errors while installing FreeIPA on CentOS 7 server.
+
+{:refdef: style="text-align: center;"}
+![image-title-here](/assets/free.PNG){:class="img-responsive"}
+{: refdef}
+
+This seems to be known issue on CentOS 7, so to resolve this we have restart dbus service (service dbus restart) and uninstall freeipa using the command “ipa-server-install –uninstall” and then again try to install.
+
+<I><B>Step:5 Verification & Access FreeIPA admin portal.</B></I>
+
+Use the below command to check whether all services of FreeIPA are running or not.
+
+{:refdef: style="text-align: center;"}
+![image-title-here](/assets/free1.PNG){:class="img-responsive"}
+{: refdef}
+
+
+We can verify whether admin user will get token via Kerberos using the kinit command, use the same password of admin user that we supplied during FreeIPA installation.
+{% highlight shell %}
+#kinit admin
+#klist
+{% endhighlight %}
+
+Access the FreeIPA admin portal using the URL:
+
+https://ipa1.qure.ai/ipa1/ui
+
+Use the user name as admin and the password that we specify during the installation.
+
+
+
+<h1>{{ "FreeIPA in Docker Container" }}</h1>
+
+FreeIPA is also available as a docker container. we can pull the docker image of `freeipa-server` from docker hub. 
+[Link to Docker hub.](https://hub.docker.com/r/freeipa/freeipa-server/)
+
+{% highlight shell %}
+$ docker pull freeipa/freeipa-server:centos-7
+{% endhighlight %}
+
+<B><I> How to run the FreeIPA docker container. </I></B>
+
+Now before running the container. Create a directory(used as a volume in docker instance) and set the necessary permission.
+
+{% highlight shell %}
+$ mkdir /var/lib/ipa-data
+$ setsebool -P container_manage_cgroup 1
+$ chmod 777 /var/lib/ipa-data
+{% endhighlight %}
+
+We can create the FreeIPA container with docker using
+{% highlight shell %}
+docker run --name freeipa-server-container -ti -h ipa1.qure.ai -v /sys/fs/cgroup:/sys/fs/cgroup:ro -v /var/lib/ipa-data:/data:Z freeipa/freeipa-server:centos-7
+{% endhighlight %}
+
+If you need to access the docker container outside the host, you should map the container ports with host ports using option -p 53:53/udp -p 53:53 -p 80:80 -p 443:443 -p 389:389 -p 636:636 -p 88:88 -p 464:464 -p 88:88/udp -p 464:464/udp -p 123:123/udp -p 7389:7389 -p 9443:9443 -p 9444:9444 -p 9445:9445.
+
+If you receive error like:
+{% highlight shell %}
+IPv6 stack is enabled in the kernel but there is no interface that
+has ::1 address assigned. Add ::1 address resolution to 'lo' interface.
+You might need to enable IPv6 on the interface 'lo' in sysctl.conf.
+{% endhighlight %}
+
+you need to add below option.
+{% highlight text %}
+--sysctl net.ipv6.conf.all.disable_ipv6=0
+{% endhighlight %}
+
+Now the FreeIPA docker container is ready. Verify the status of running container.
+{% highlight text %}
+$ docker ps -a
+{% endhighlight %}
+
+Access the FreeIPA admin portal using the URL:
+
+https://ipa1.qure.ai/ipa1/ui
+
+<h1>{{ "IPA commands" }}</h1>
+
+* Use the ipa user-add command to add users to FreeIPA. You can pass attributes directly on the command line, or run the command with no parameters to enter interactive mode. Interactive mode prompts you to enter the basic attributes required to add a new user. 
+
+{% highlight text %}
+$ ipa user-add
+{% endhighlight %}
+
+* Use the ipa *-find commands to search for a particular type of IdM entries. For example, To list all users:
+{% highlight text %}
+$ ipa user-find
+{% endhighlight %}
+
+* The ipa script can display help about a particular set of subcommands: a topic. To display the list of available topics, use the ipa help topics command:
+
+{% highlight text %}
+$ ipa help topics
+{% endhighlight %}
